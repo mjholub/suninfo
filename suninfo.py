@@ -2,12 +2,13 @@
 
 import time
 from argparse import ArgumentParser
-from datetime import datetime, date, timezone, timedelta
+from datetime import datetime, date, timedelta
+from pytz import timezone
 
 
 from astral import LocationInfo
+from astral.location import Location
 from astral.sun import sun
-from dateutil import parser
 
 
 class Result:
@@ -40,6 +41,9 @@ def parse_args():
             interval in seconds between updates
             """
         )
+        parser.add_argument(
+            '-d', '--debug', action='store_true', help="Show debugging info"
+        )
         return Result(parser.parse_args())
     except Exception as e:
         return Result(error=str(e))
@@ -51,20 +55,26 @@ city = LocationInfo("Kraków", "Poland", "Europe/Warsaw", 50.07, 20.03)
 
 
 def calculate_time_until():
-    s = sun(city.observer, date=date.today())
+    loc = Location(city)
+    s = sun(city.observer, date=date.today(), tzinfo=loc.timezone)
     sunrise = s['sunrise']
     sunset = s['sunset']
+    now = datetime.now(timezone(city.timezone))
+    debug = parse_args().get('debug', False)
+    if debug:
+        print(f"Sunrise: {sunrise}")
+        print(f"Sunset: {sunset}")
+        print(f"Now: {now}")
 
-    now = datetime.now()
     pprint = parse_args().get('pprint', False)
 
-    if now < parser.parse(sunrise):
+    if now < sunrise:
         time_until = sunrise - now
         if pprint:
             print(f"Time until sunrise: {time_until}")
         else:
             print(time_until)
-    elif now < parser.parse(sunset):
+    elif now < sunset:
         time_until = sunset - now
         if pprint:
             print(f"Time until sunset: {time_until}")
