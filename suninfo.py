@@ -109,6 +109,9 @@ def calculate_time_until():
 
 
 interval = parse_args().get('interval', 60)
-while True:
+if interval <= 0:
     calculate_time_until()
-    time.sleep(interval)
+else:
+    while True:
+        calculate_time_until()
+        time.sleep(interval)
