@@ -1,5 +1,6 @@
 I use this script for a widget in Ironbar.
 Adjust your city in the script.
+You need Nerdfonts installed to use this script.
 
 Options:
 ```
