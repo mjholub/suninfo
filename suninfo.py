@@ -87,13 +87,13 @@ def calculate_time_until():
     pprint = parse_args().get('pprint', False)
 
     if now < sunrise:
-        time_until = (str(sunrise - now)).split(".")[0]
+        time_until = ':'.join((str(sunrise - now)).split(".")[0].split(':')[:3])
         if pprint:
             print(f": {time_until}")
         else:
             print(time_until)
     elif now < sunset:
-        time_until = (str(sunset - now)).split(".")[0]
+        time_until = ':'.join((str(sunset - now)).split(".")[0].split(':')[:3])
         if pprint:
             print(f"󰖚: {time_until}")
         else:
@@ -101,9 +101,9 @@ def calculate_time_until():
     else:
         tomorrow = date.today() + timedelta(days=1)
         s_tomorrow = sun(city.observer, date=tomorrow)
-        time_until = (str(s_tomorrow['sunrise'] - now)).split(".")[0]
+        time_until = ':'.join((str(s_tomorrow['sunrise'] - now)).split(".")[0].split(':')[:3])
         if pprint:
-            print(f"next sunrise in {time_until}")
+            print(f" (next) in {time_until}")
         else:
             print(time_until)
 
@@ -113,5 +113,8 @@ if interval <= 0:
     calculate_time_until()
 else:
     while True:
-        calculate_time_until()
-        time.sleep(interval)
+        try:
+            calculate_time_until()
+            time.sleep(interval)
+        except Exception as e:
+            print(f"An error occured: {str(e)}")
